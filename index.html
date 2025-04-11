@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-tac-toe game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        .message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tick-tac-toe game</h1>
+    <div class="message" id="message">Player's role: X</div>
+    <div class="board" id="board">
+        <!-- الخلايا -->
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <button id="restartButton">Restart the game</button>
+
+    <script>
+        let currentPlayer = 'X'; 
+        let board = ['', '', '', '', '', '', '', '', '']; 
+        let gameOver = false; 
+        let movesCount = 0; 
+
+        
+        const winningCombinations = [
+            [0, 1, 2], 
+            [3, 4, 5], 
+            [6, 7, 8], 
+            [0, 3, 6], 
+            [1, 4, 7], 
+            [2, 5, 8], 
+            [0, 4, 8], 
+            [2, 4, 6]  
+        ];
+
+        
+        const cells = document.querySelectorAll('.cell');
+        const messageElement = document.getElementById('message');
+        const restartButton = document.getElementById('restartButton');
+
+        
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick, { once: true });
+        });
+
+        
+        restartButton.addEventListener('click', restartGame);
+
+        
+        function handleCellClick(event) {
+            if (gameOver) return; 
+
+            const cell = event.target;
+            const index = cell.getAttribute('data-index');
+
+            
+            if (board[index] !== '') return;
+
+            
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+
+            
+            movesCount++;
+
+            
+            if (checkWin()) {
+                messageElement.textContent = `The player ${currentPlayer} Won! 🎉`;
+                gameOver = true;
+            } else if (movesCount === 9) {
+                messageElement.textContent = 'The game ended in a draw!';
+                gameOver = true;
+            } else {
+                // تغيير اللاعب
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                messageElement.textContent = `Player's role: ${currentPlayer}`;
+            }
+        }
+
+        // التحقق من الفوز
+        function checkWin() {
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return true; // هناك فائز
+                }
+            }
+            return false; // لا يوجد فائز
+        }
+
+        // إعادة تشغيل اللعبة
+        function restartGame() {
+            currentPlayer = 'X';
+            board = ['', '', '', '', '', '', '', '', ''];
+            gameOver = false;
+            movesCount = 0;
+            messageElement.textContent = `Player's role: ${currentPlayer}`;
+
+            // إعادة تعيين الخلايا
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.addEventListener('click', handleCellClick, { once: true });
+            });
+        }
+    </script>
+</body>
+</html>
